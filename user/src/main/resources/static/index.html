@@ -1,0 +1,109 @@
+<meta charset="ISO-8859-1"> 
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <script>
+    
+        function loadData(){
+            jQuery.ajax({ 
+                type: 'GET',
+                url: "http://localhost:8080/user",
+                dataType: 'json',
+                success: function(data){        
+                    drawData(data);
+                }
+            });
+         }
+
+         function loadDataById(){
+            var Id = jQuery("#empId").val();
+            jQuery.ajax({ 
+                type: 'GET',
+                url: "http://localhost:8080/user/"+Id,
+                dataType: 'json',
+                success: function(data){        
+                    drawDataSingle(data);
+                }
+            });
+         }
+         function drawDataSingle(data){
+             debugger;
+            var appendId = "#header";
+            var appendArray =new Array();
+             var user = data;
+                        var addresLen = user.address.length;
+                        console.log(user.fullname + " ---- "+addresLen);
+                    // console.log(user);
+                         var userAndDeptPart=' <tr id="col1">  <td >'+user.id+'</td> <td >'+user.username+'</td> <td >'+user.fullname+'</td> <td >'+user.email+'</td> <td >'+user.password+'</td> <td>'+user.department.deptName+'</td> <td >'+user.department.deptId+'</td> <td> <a href="#'+user.username+'" data-toggle="modal" data-target="#'+user.username+'">getAddress</a> </td><tr> ';
+                            jQuery(appendId).after (userAndDeptPart);
+                            var addressPart = ' <div class="modal" id="'+user.username+'">  <div class="modal-dialog">   <div class="modal-content"> <table> <tr><th>address1</th><th>address2</th><th>city</th><th>country</th><th>state</th><th>zip</th></tr>';
+                            for (j = 0; j < addresLen; j++) {
+                                    addressPart = addressPart+ '<tr> <td>'+user.address[j].address1+'</td> <td>'+user.address[j].address2+'</td> <td>'+user.address[j].city+'</td> <td>'+user.address[j].country+'</td>  <td>'+user.address[j].state+'</td> <td>'+user.address[j].zip+'</td></tr>';
+                             }
+                             addressPart =  addressPart + '</tr></table> </div></div></div> ';
+                             console.log(addressPart);
+                             jQuery(appendId).after (addressPart);
+                             addressPart = null;
+                             /*
+                                <div class="modal hide" id="'+user.username+'">  <div class="modal-dialog">   <div class="modal-content">
+                             */
+                 }
+
+         function drawData(data){
+             debugger;
+            var appendId = "#header";
+            var appendArray =new Array();
+            var userArray = data;
+                    for (i = 0; i < userArray.length; i++) {
+                        debugger;
+                        var user = userArray[i];
+                        var addresLen = user.address.length;
+                        console.log(user.fullname + " ---- "+addresLen);
+                    // console.log(user);
+                    var userAndDeptPart=' <tr id="col1">  <td >'+user.id+'</td> <td >'+user.username+'</td> <td >'+user.fullname+'</td> <td >'+user.email+'</td> <td >'+user.password+'</td> <td>'+user.department.deptName+'</td> <td >'+user.department.deptId+'</td> <td> <a href="#'+user.username+'" data-toggle="modal" data-target="#'+user.username+'">getAddress</a> </td><tr> '; 
+                        jQuery(appendId).after(userAndDeptPart);
+                        var addressPart = ' <div class="modal" id="'+user.username+'">  <div class="modal-dialog">   <div class="modal-content"> <table> <tr><th>address1</th><th>address2</th><th>city</th><th>country</th><th>state</th><th>zip</th></tr>';
+                            for (j = 0; j < addresLen; j++) {
+                                addressPart = addressPart+ '<tr> <td>'+user.address[j].address1+'</td> <td>'+user.address[j].address2+'</td> <td>'+user.address[j].city+'</td> <td>'+user.address[j].country+'</td>  <td>'+user.address[j].state+'</td> <td>'+user.address[j].zip+'</td></tr>';
+                            }
+                            addressPart =  addressPart + '  </table> </div></div></div> ';
+                            //console.log(" *** AddressPart***  " +addressPart);
+                            //console.log(" *** userAndDeptPart***  " +userAndDeptPart);
+                            jQuery(appendId).after(addressPart);
+                           // console.log(" *** userAndDeptPart After combine***  " +userAndDeptPart);
+                             addressPart = null;
+                             appendArray[i] = userAndDeptPart;
+                          
+                    } 
+                   
+                
+         }
+</script>
+    </head>
+    <body>
+        <input type="button" name="getData" id="loadDataBtn" value="Get Data" class="btn btn-primary" onclick="loadData()">
+
+        <input type="button" name="getData" id="loadDataByIdBtn" value="Get Data By id" class="btn btn-primary" onclick="loadDataById()">
+        <input type="text" name="empId" id="empId" placeholder="Insert ID" >
+        <div class="table" id="here_table" style=" border: 1px solid black;">
+            <table>
+                <tr id="header">
+                    <th>id</th>
+                    <th>username</th>
+                    <th>fullname</th>
+                    <th>email</th>
+                    <th>password</th>
+                    <th>department</th>
+                    <th>deptId</th>
+                    <th>address</th>
+                </tr>
+            </table>
+        </div>
+        
+
+    </body>
+</html>
